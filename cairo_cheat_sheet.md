@@ -331,6 +331,20 @@ struct TxInfo:
 end
 ```
 
+### Get_contract_address
+
+Get the address of current contract
+
+```cairo
+from starkware.starknet.common.syscalls import (
+    get_contract_address,
+)
+
+# ...
+
+let (contract_address) = get_contract_address()
+```
+
 ## Common library
 
 Cairo has quite comprehensive common library. [See full list here](https://perama-v.github.io/cairo/cairo-common-library/)
