@@ -33,6 +33,14 @@ local x = 0   # Define and assing
 assert x = 5  # Assign x = 5
 ```
 
+Locals can also be created directly from function result
+
+```cairo
+alloc_locals
+
+let (local x) = my_function()
+```
+
 ### Constants
 
 ```cairo
