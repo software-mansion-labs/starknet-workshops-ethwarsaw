@@ -71,6 +71,16 @@ end
 funcion_accepting_array(my_array, 2)
 ```
 
+When returning arrays from functions it is recommended you return both pointer to array
+and a size of that array
+
+```cairo
+func function_returning_array() -> (arr: felt*, size: felt):
+    ...
+    return (arr=arr, size=size)
+end
+```
+
 ## Tuples
 
 ```cairo
