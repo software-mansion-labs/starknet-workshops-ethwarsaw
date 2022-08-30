@@ -37,6 +37,6 @@ Configure Visual Studio Code settings:
 "editor.formatOnSave": true,
 "editor.formatOnSaveTimeout": 1500
 ```
-**Note**: You should start Visual Studio Code from the terminal *running the virtual environment*, by typing code. For instructions for macOS, see [here](https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line).
+**Note**: You should start Visual Studio Code from the terminal *running the virtual environment*, by typing `code`. For instructions for macOS, see [here](https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line).
 
 ## Cairo Cheat Sheet
