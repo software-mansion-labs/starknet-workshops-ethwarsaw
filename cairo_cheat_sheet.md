@@ -293,6 +293,16 @@ from starkware.starknet.common.syscalls import get_caller_address
 let (caller_address) = get_caller_address()
 ```
 
+### Get_block_number
+
+Get the current block number
+
+```cairo
+from starkware.starknet.common.syscalls import get_block_number
+
+let (block_number) = get_block_number()
+```
+
 ### Get_tx_info
 
 Get information about transactions used to invoke a function
