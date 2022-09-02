@@ -362,6 +362,26 @@ Cairo has quite comprehensive common library. [See full list here](https://peram
 Modules can be imported using `from starkware.cairo.common.MODULE import COMPONENT`
 
 Some modules include:
-* [math-cmp](https://perama-v.github.io/cairo/cairo-common-library/#math_cmp) for value comparisons
+* [math_cmp](https://perama-v.github.io/cairo/cairo-common-library/#math_cmp) for value comparisons
 * [math](https://perama-v.github.io/cairo/cairo-common-library/#math) for mathematics operations
 * [hash](https://perama-v.github.io/cairo/cairo-common-library/#hash) for computing Pedersen hash
+
+## Felt comparisions
+
+Use functions from `math` and `math_cmp` to compare values.
+
+Some common usages include:
+
+```cairo
+from starkware.cairo.common.math import assert_not_zero, assert_nn
+from starkware.cairo.common.math_cmp import is_le 
+
+# Verify val != 0
+assert_not_zero(val)
+
+# Verify val >= 0
+assert_nn(val)
+
+# Check if a <= b
+is_le(a, b)
+```
