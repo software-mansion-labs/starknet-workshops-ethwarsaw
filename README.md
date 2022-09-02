@@ -7,6 +7,10 @@ You will learn what StarkNet is, how it works and why it’s so good. We’ll in
 ### 📍 Warsaw University of Technology - [map](https://goo.gl/maps/diZ5qW1p2Buafmtv9)
 ### 🌎 Conference website - [go](https://www.ethwarsaw.dev)
 
+### 🖥 [Presentation slides](https://docs.google.com/presentation/d/1EtMje9-22sNJA0woz0vqceHYwU8BuoxxuEVcXZpiuCE/edit?usp=sharing)
+
+https://docs.google.com/presentation/d/1EtMje9-22sNJA0woz0vqceHYwU8BuoxxuEVcXZpiuCE/edit?usp=sharing
+
 ## Downloading the repository
 Please run:
 ```shell
