@@ -1,6 +1,6 @@
 %lang starknet
 from starkware.cairo.common.math import assert_lt
-from starkware.cairo.common.math_cmp import is_le_felt
+from starkware.cairo.common.math_cmp import is_le
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.hash import hash2
 from starkware.cairo.common.uint256 import Uint256, uint256_le, uint256_add
@@ -80,7 +80,7 @@ func is_auction_active{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_c
     # retrive information about current block.
     let (current_block) = get_block_number()
 
-    let (active) = is_le_felt(current_block, last_block)
+    let (active) = is_le(current_block, last_block)
 
     return (active)
 end
@@ -188,17 +188,14 @@ func prolong_auction_on_end{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, ra
 
     local diff = end_block - current_block
 
-    let (should_prolong) = is_le_felt(diff, AUCTION_PROLONGATION_ON_BID)
+    let (should_prolong) = is_le(diff, AUCTION_PROLONGATION_ON_BID)
     if should_prolong == 1:
         let new_last_block = end_block + AUCTION_PROLONGATION_ON_BID
         auction_last_block.write(auction_id, new_last_block)
-        tempvar syscall_ptr = syscall_ptr
-        tempvar pedersen_ptr = pedersen_ptr
-        tempvar range_check_ptr = range_check_ptr
     else:
-        tempvar syscall_ptr = syscall_ptr
-        tempvar pedersen_ptr = pedersen_ptr
-        tempvar range_check_ptr = range_check_ptr
+        # This else statement must contain function call, to
+        # avoid using tempvars (outside of scope of this workshop)
+        auction_last_block.write(auction_id, end_block)
     end
 
     return ()
@@ -228,17 +225,10 @@ func place_bid{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
     let (previous_bid_exists) = is_bid_initialized(old_bid)
     if previous_bid_exists == 1:
         vault.transfer_bid(auction.erc20_address, old_bid, old_bid.address)
-        # Create and assign tempvar.
-        tempvar syscall_ptr = syscall_ptr
-        tempvar pedersen_ptr = pedersen_ptr
-        tempvar range_check_ptr = range_check_ptr
+        vault.deposit_bid(auction.erc20_address, new_bid)
     else:
-        tempvar syscall_ptr = syscall_ptr
-        tempvar pedersen_ptr = pedersen_ptr
-        tempvar range_check_ptr = range_check_ptr
+        vault.deposit_bid(auction.erc20_address, new_bid)
     end
-
-    vault.deposit_bid(auction.erc20_address, new_bid)
 
     bid_placed.emit(auction_id=auction_id, amount=amount)
 
