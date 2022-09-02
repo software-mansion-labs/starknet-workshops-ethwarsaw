@@ -385,3 +385,40 @@ assert_nn(val)
 # Check if a <= b
 is_le(a, b)
 ```
+
+## Events
+
+Contracts can emit events that are then visible in the `events`
+section of transaction receipt output.
+
+```json
+"events": [
+    {
+        "data": [
+            "0x0",
+            "0x10e1"
+        ],
+        "from_address": "0x14acf3b7e92f97adee4d5359a7de3d673582f0ce03d33879cdbdbf03ec7fa5d",
+        "keys": [
+            "0x3db3da4221c078e78bd987e54e1cc24570d89a7002cefa33e548d6c72c73f9d"
+        ]
+    }
+]
+```
+
+### Define an event
+
+```cairo
+# @event annotation is necessary
+@event
+func my_event(
+    param1 : felt, param2 : felt
+):
+end
+```
+
+### Emit an event
+
+```cairo
+my_event.emit(param1=val1, param2=val2)
+```
