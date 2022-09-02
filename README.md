@@ -73,3 +73,9 @@ You'll need a wallet, that's compatibile with starknet.
 Go [here](https://www.argent.xyz/argent-x/) to download Argent X extention for your browser, install it and create your wallet by following displayed instructions.
 
 ## Cairo Cheat Sheet
+
+# Link to telegram group
+
+If you have further questions for this workshop, feel free to ask them here:
+
+https://t.me/+lg3D231WTb04YzU8
