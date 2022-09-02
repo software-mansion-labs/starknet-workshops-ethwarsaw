@@ -59,7 +59,7 @@ from src.storage import auctions, finalized_auctions, auction_highest_bid, aucti
 
 func is_auction_active{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     auction_id : felt
-):
+) -> (is_active: felt):
     alloc_locals
 
     # Write your solution below
