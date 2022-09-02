@@ -7,7 +7,11 @@ You will learn what StarkNet is, how it works and why it’s so good. We’ll in
 ### 📍 Warsaw University of Technology - [map](https://goo.gl/maps/diZ5qW1p2Buafmtv9)
 ### 🌎 Conference website - [go](https://www.ethwarsaw.dev)
 
-
+## Downloading the repository
+Please run:
+```shell
+git clone --recurse-submodules https://github.com/software-mansion-labs/starknet-workshops-ethwarsaw.git
+```
 
 ## Setting up the environment
 
