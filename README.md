@@ -7,9 +7,7 @@ You will learn what StarkNet is, how it works and why it’s so good. We’ll in
 ### 📍 Warsaw University of Technology - [map](https://goo.gl/maps/diZ5qW1p2Buafmtv9)
 ### 🌎 Conference website - [go](https://www.ethwarsaw.dev)
 
-## Setting up Argent X wallet
-You'll need a wallet, that's compatibile with starknet.
-Go [here](https://www.argent.xyz/argent-x/) to download Argent X extention for your browser, install it and create your wallet by following displayed instructions.
+
 
 ## Setting up the environment
 
@@ -63,5 +61,9 @@ Configure Visual Studio Code settings:
 ## Other IDEs
 
 If you don't use VSCode, follow instructions provided here https://github.com/ericglau/cairo-l
+
+## Setting up Argent X wallet (optional)
+You'll need a wallet, that's compatibile with starknet.
+Go [here](https://www.argent.xyz/argent-x/) to download Argent X extention for your browser, install it and create your wallet by following displayed instructions.
 
 ## Cairo Cheat Sheet
