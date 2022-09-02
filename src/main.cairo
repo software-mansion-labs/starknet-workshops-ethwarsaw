@@ -29,54 +29,43 @@ from src.assertions import (
 )
 from src.storage import auctions, finalized_auctions, auction_highest_bid, auction_last_block
 
-@view
-func get_auction{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    auction_id : felt
-) -> (auction : AuctionData):
-    let (auction) = auctions.read(auction_id)
 
-    assert_auction_initialized(auction)
+##### EXERCISE 0 #####
 
-    return (auction)
-end
+# Implement getters:
+# - get_auction(auction_id : felt) -> (auction : AuctionData)
+# - get_auction_highest_bid(auction_id : felt) -> (highest_bid : Bid)
+# - get_auction_last_block(auction_id : felt) -> (end_block : felt)
+#
+# - Remember about @view decorator
+# - Check cairo_cheat_sheet.md for reference
+#
+# To test it, run:
+# protostar test tests/test_get_*.cairo
 
-@view
-func get_auction_highest_bid{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    auction_id : felt
-) -> (highest_bid : Bid):
-    alloc_locals
-    let (highest_bid) = auction_highest_bid.read(auction_id)
 
-    assert_bid_initialized(highest_bid)
 
-    return (highest_bid)
-end
+##### EXERCISE 1 #####
 
-@view
-func get_auction_last_block{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    auction_id : felt
-) -> (end_block : felt):
-    let (end_block) = auction_last_block.read(auction_id)
+# Implement content of is_auction_active method
+# It should return 1 if current_block <= end block of an auction
+# and 0 otherwise.
+#
+# - Check syscalls section of cairo_cheat_sheet.md
+#   for how to get current block number.
+#
+# To test it, run:
+# protostar test tests/test_is_auction_active.cairo
 
-    assert_last_block_initialized(end_block)
-
-    return (end_block)
-end
-
-@view
 func is_auction_active{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     auction_id : felt
-) -> (active : felt):
+):
     alloc_locals
 
-    let (last_block) = auction_last_block.read(auction_id)
-    assert_last_block_initialized(last_block)
+    # Write your solution below
 
-    let (current_block) = get_block_number()
-
-    let (active) = is_le(current_block, last_block)
-
-    return (active)
+    return (0)
+    # ^ Remember to change this!
 end
 
 func assert_auction_active{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
@@ -103,6 +92,20 @@ func assert_auction_not_active{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*,
     return ()
 end
 
+##### EXERCISE 2 #####
+
+# Implement content of the create_auction function
+# - It should create new AuctionData object with provided
+#   information, and save it to auctions storage
+# - It should calculate the end block of the auction, based on
+#   current block number and auction lifetime
+# - Then it should use vault, to deposit seller's asset in the
+#   contract
+# - And in the end, emit auction_created event. (see events.cairo file, and cheat_sheet)
+#
+# To test it, run:
+# protostar test tests/test_create_auction.cairo
+
 @external
 func create_auction{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     auction_id : felt,
@@ -114,35 +117,13 @@ func create_auction{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_chec
 ) -> (auction_id : felt):
     alloc_locals
 
-    let (seller) = get_caller_address()
-
     assert_auction_does_not_exist(auction_id)
     assert_address(erc20_address)
     assert_address(erc721_address)
     assert_min_bid_increment(min_bid_increment)
     assert_lifetime(lifetime)
 
-    let auction = AuctionData(
-        seller=seller,
-        asset_id=asset_id,
-        min_bid_increment=min_bid_increment,
-        erc20_address=erc20_address,
-        erc721_address=erc721_address,
-    )
-    auctions.write(auction_id, auction)
-
-    let (current_block) = get_block_number()
-    let end_block = current_block + lifetime
-    auction_last_block.write(auction_id, end_block)
-
-    vault.deposit_asset(erc721_address, asset_id, seller)
-
-    auction_created.emit(
-        auction_id=auction_id,
-        asset_id=asset_id,
-        min_bid_increment=min_bid_increment,
-        lifetime=lifetime,
-    )
+    ### Place your implementation below
 
     return (auction_id)
 end
@@ -189,44 +170,46 @@ func prolong_auction_on_end{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, ra
     return ()
 end
 
+##### EXERCISE 3 #####
+
+# Implement logic of placing a bid on an auction. It should
+# - Get old_bid object, and create new_bid object
+# - Verify if the outbid is valid
+# - Write the new bid to the storage.
+# - Prolong auction end time if needed (see above function)
+# - check whether previous bid exists -> if so, return previous bid to the bidder (use vault for that)
+# - deposit bid from the new bidder in the contract
+# - at the end, emit the bid_place event
+#
+# To test it, run:
+# protostar test tests/test_place_bid.cairo
+
 @external
 func place_bid{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     auction_id : felt, amount : Uint256
 ):
     alloc_locals
 
-    assert_auction_active(auction_id)
+    # Uncomment after 
+    # assert_auction_active(auction_id)
 
-    let (caller_address) = get_caller_address()
-    let (old_bid) = auction_highest_bid.read(auction_id)
-
-    let new_bid = Bid(amount=amount, address=caller_address)
-
-    let (auction) = auctions.read(auction_id)
-    verify_outbid(auction_id, old_bid, new_bid)
-
-    auction_highest_bid.write(auction_id, new_bid)
-
-    prolong_auction_on_end(auction_id)
-
-    let (previous_bid_exists) = is_bid_initialized(old_bid)
-    if previous_bid_exists == 1:
-        vault.transfer_bid(auction.erc20_address, old_bid, old_bid.address)
-        tempvar syscall_ptr = syscall_ptr
-        tempvar pedersen_ptr = pedersen_ptr
-        tempvar range_check_ptr = range_check_ptr
-    else:
-        tempvar syscall_ptr = syscall_ptr
-        tempvar pedersen_ptr = pedersen_ptr
-        tempvar range_check_ptr = range_check_ptr
-    end
-
-    vault.deposit_bid(auction.erc20_address, new_bid)
-
-    bid_placed.emit(auction_id=auction_id, amount=amount)
+    # Write your solution below
 
     return ()
 end
+
+##### EXERCISE 4 #####
+
+# Implement logic of finilizing the auction
+# It should:
+# - write to finalized_auctions storage, that the auction was finalized
+# - get highest bid and verify that it was initialized - i.e. that anyone has bidded on this auction
+# - If yes, send the money to the seller and the asset to the buyer
+# - If not, return the asset to the seller
+# - At the end, emit the auction_finalized event.
+#
+# To test it, run:
+# protostar test tests/test_finalize_auction.cairo
 
 @external
 func finalize_auction{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
@@ -237,27 +220,7 @@ func finalize_auction{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_ch
     assert_auction_not_active(auction_id)
     assert_auction_not_finalized(auction_id)
 
-    # It is important to do it BEFORE transferring assets, otherwise malicious ERC721 might
-    # call finalize_auction multiple times during transfer.
-    finalized_auctions.write(auction_id, 1)
-
-    let (auction) = get_auction(auction_id)
-
-    let (winning_bid) = auction_highest_bid.read(auction_id)
-
-    let (has_bid) = is_bid_initialized(winning_bid)
-
-    if has_bid == 1:
-        # Seller gets the money
-        vault.transfer_bid(auction.erc20_address, winning_bid, auction.seller)
-        # Buyer gets the asset
-        vault.transfer_asset(auction.erc721_address, auction.asset_id, winning_bid.address)
-    else:
-        # Seller gets the asset back
-        vault.transfer_asset(auction.erc721_address, auction.asset_id, auction.seller)
-    end
-
-    auction_finalized.emit(auction_id=auction_id)
+    # Write your solution below
 
     return ()
 end
