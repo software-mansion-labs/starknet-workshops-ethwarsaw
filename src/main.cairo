@@ -29,12 +29,14 @@ from src.assertions import (
 )
 from src.storage import auctions, finalized_auctions, auction_highest_bid, auction_last_block
 
+##### EXERCISE 0 #####
 @view
 func get_auction{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     auction_id : felt
 ) -> (auction : AuctionData):
+    # Read from 'auctions' storage variable 
     let (auction) = auctions.read(auction_id)
-
+    # Call assert_auction_initialized function with 'auction' object as a parameter.
     assert_auction_initialized(auction)
 
     return (auction)
@@ -63,17 +65,22 @@ func get_auction_last_block{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, ra
     return (end_block)
 end
 
+##### EXERCISE 1 #####
 @view
 func is_auction_active{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     auction_id : felt
 ) -> (active : felt):
+    # Initialize memory for local variables.
     alloc_locals
 
     let (last_block) = auction_last_block.read(auction_id)
     assert_last_block_initialized(last_block)
 
+    # Call get_block_number() syscall
+    # retrive information about current block.
     let (current_block) = get_block_number()
 
+    # Verify that current_block <= last_block.
     let (active) = is_le(current_block, last_block)
 
     return (active)
@@ -103,6 +110,7 @@ func assert_auction_not_active{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*,
     return ()
 end
 
+##### EXERCISE 2 #####
 @external
 func create_auction{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     auction_id : felt,
@@ -114,14 +122,17 @@ func create_auction{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_chec
 ) -> (auction_id : felt):
     alloc_locals
 
-    let (seller) = get_caller_address()
-
     assert_auction_does_not_exist(auction_id)
     assert_address(erc20_address)
     assert_address(erc721_address)
     assert_min_bid_increment(min_bid_increment)
     assert_lifetime(lifetime)
 
+    # Call get_caller_address() syscall
+    # retrive information about caller adress.
+    let (seller) = get_caller_address()
+
+    # Create an instance of AuctionData struct.
     let auction = AuctionData(
         seller=seller,
         asset_id=asset_id,
@@ -129,14 +140,19 @@ func create_auction{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_chec
         erc20_address=erc20_address,
         erc721_address=erc721_address,
     )
+
+    # Write auction to 'auctions' storage variable (map).
     auctions.write(auction_id, auction)
 
+    # Get current block and calculate auction end block number. 
     let (current_block) = get_block_number()
     let end_block = current_block + lifetime
     auction_last_block.write(auction_id, end_block)
 
+    # Transfer ERC721 asset to the asset vault.
     vault.deposit_asset(erc721_address, asset_id, seller)
 
+    # Emit an auction_created event.
     auction_created.emit(
         auction_id=auction_id,
         asset_id=asset_id,
@@ -189,6 +205,7 @@ func prolong_auction_on_end{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, ra
     return ()
 end
 
+##### EXERCISE 3 #####
 @external
 func place_bid{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     auction_id : felt, amount : Uint256
@@ -212,6 +229,7 @@ func place_bid{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
     let (previous_bid_exists) = is_bid_initialized(old_bid)
     if previous_bid_exists == 1:
         vault.transfer_bid(auction.erc20_address, old_bid, old_bid.address)
+        # Create and assign tempvar.
         tempvar syscall_ptr = syscall_ptr
         tempvar pedersen_ptr = pedersen_ptr
         tempvar range_check_ptr = range_check_ptr
@@ -228,6 +246,7 @@ func place_bid{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
     return ()
 end
 
+##### EXERCISE 4 #####
 @external
 func finalize_auction{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     auction_id : felt
