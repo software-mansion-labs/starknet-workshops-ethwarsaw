@@ -36,7 +36,7 @@ func get_auction{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
 ) -> (auction : AuctionData):
     # Read from 'auctions' storage variable 
     let (auction) = auctions.read(auction_id)
-    # Call assert_auction_initialized function with auction id as a parameter
+    # Call assert_auction_initialized function with 'auction' object as a parameter.
     assert_auction_initialized(auction)
 
     return (auction)
