@@ -40,6 +40,8 @@ from src.storage import auctions, finalized_auctions, auction_highest_bid, aucti
 # - Remember about @view decorator
 # - Check cairo_cheat_sheet.md for reference
 #
+# - Remember to assert that read values were initialized correctly
+#
 # To test it, run:
 # protostar test tests/test_get_*.cairo
 
