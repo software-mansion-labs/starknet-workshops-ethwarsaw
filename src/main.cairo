@@ -190,8 +190,7 @@ func place_bid{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
 ):
     alloc_locals
 
-    # Uncomment after 
-    # assert_auction_active(auction_id)
+    assert_auction_active(auction_id)
 
     # Write your solution below
 
