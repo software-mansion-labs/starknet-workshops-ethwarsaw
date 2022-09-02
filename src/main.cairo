@@ -1,6 +1,6 @@
 %lang starknet
 from starkware.cairo.common.math import assert_lt
-from starkware.cairo.common.math_cmp import is_le
+from starkware.cairo.common.math_cmp import is_le_felt
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.hash import hash2
 from starkware.cairo.common.uint256 import Uint256, uint256_le, uint256_add
@@ -74,7 +74,7 @@ func is_auction_active{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_c
 
     let (current_block) = get_block_number()
 
-    let (active) = is_le(current_block, last_block)
+    let (active) = is_le_felt(current_block, last_block)
 
     return (active)
 end
@@ -173,7 +173,7 @@ func prolong_auction_on_end{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, ra
 
     local diff = end_block - current_block
 
-    let (should_prolong) = is_le(diff, AUCTION_PROLONGATION_ON_BID)
+    let (should_prolong) = is_le_felt(diff, AUCTION_PROLONGATION_ON_BID)
     if should_prolong == 1:
         let new_last_block = end_block + AUCTION_PROLONGATION_ON_BID
         auction_last_block.write(auction_id, new_last_block)
