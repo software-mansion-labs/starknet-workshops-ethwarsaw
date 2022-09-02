@@ -366,7 +366,7 @@ Some modules include:
 * [math](https://perama-v.github.io/cairo/cairo-common-library/#math) for mathematics operations
 * [hash](https://perama-v.github.io/cairo/cairo-common-library/#hash) for computing Pedersen hash
 
-## Felt comparisions
+## Felt comparison
 
 Use functions from `math` and `math_cmp` to compare values.
 
