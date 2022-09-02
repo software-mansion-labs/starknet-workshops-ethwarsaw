@@ -43,6 +43,8 @@ from src.storage import auctions, finalized_auctions, auction_highest_bid, aucti
 # - Remember about @view decorator
 # - Check cairo_cheat_sheet.md for reference
 #
+# - Remember to assert that read values were initialized correctly
+#
 # To test it, run:
 # protostar test tests/test_get_*.cairo
 
@@ -62,7 +64,7 @@ from src.storage import auctions, finalized_auctions, auction_highest_bid, aucti
 
 func is_auction_active{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     auction_id : felt
-):
+) -> (is_active: felt):
     alloc_locals
 
     # Write your solution below
