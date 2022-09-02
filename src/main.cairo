@@ -37,6 +37,9 @@ from src.storage import auctions, finalized_auctions, auction_highest_bid, aucti
 # - get_auction_highest_bid(auction_id : felt) -> (highest_bid : Bid)
 # - get_auction_last_block(auction_id : felt) -> (end_block : felt)
 #
+# - To each getter add assertion from src/assertions.cairo, to verify
+#   that the value is actually initialized
+#
 # - Remember about @view decorator
 # - Check cairo_cheat_sheet.md for reference
 #
