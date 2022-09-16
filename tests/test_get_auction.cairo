@@ -21,20 +21,19 @@ from tests.helpers.constants import SELLER, AUCTION_ID
 from tests.helpers.auction import auction_helpers
 
 @external
-func test_get_non_existing_auction{
-    syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
-}() -> ():
+func test_get_non_existing_auction{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    ) -> () {
     %{ expect_revert(error_message="Auction was not initalized") %}
-    get_auction(2137)
+    get_auction(2137);
 
-    return ()
-end
+    return ();
+}
 
 @external
-func test_get_existing_auction{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    ) -> ():
-    alloc_locals
-    let token_id = Uint256(0, 1)
+func test_get_existing_auction{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    ) -> () {
+    alloc_locals;
+    let token_id = Uint256(0, 1);
 
     let auction = AuctionData(
         seller=SELLER,
@@ -42,12 +41,12 @@ func test_get_existing_auction{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*,
         min_bid_increment=Uint256(100, 0),
         erc20_address='erc20_address',
         erc721_address='erc721_address',
-    )
-    auctions.write(AUCTION_ID, auction)
+    );
+    auctions.write(AUCTION_ID, auction);
 
-    let (returned_auction) = get_auction(AUCTION_ID)
+    let (returned_auction) = get_auction(AUCTION_ID);
 
-    data_helpers.assert_auctions_equal(auction, returned_auction)
+    data_helpers.assert_auctions_equal(auction, returned_auction);
 
-    return ()
-end
+    return ();
+}

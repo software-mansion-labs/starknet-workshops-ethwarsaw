@@ -3,14 +3,14 @@ from starkware.cairo.common.uint256 import Uint256
 
 @event
 func auction_created(
-    auction_id : felt, asset_id : Uint256, min_bid_increment : Uint256, lifetime : felt
-):
-end
+    auction_id: felt, asset_id: Uint256, min_bid_increment: Uint256, lifetime: felt
+) {
+}
 
 @event
-func bid_placed(auction_id : felt, amount : Uint256):
-end
+func bid_placed(auction_id: felt, amount: Uint256) {
+}
 
 @event
-func auction_finalized(auction_id : felt):
-end
+func auction_finalized(auction_id: felt) {
+}
