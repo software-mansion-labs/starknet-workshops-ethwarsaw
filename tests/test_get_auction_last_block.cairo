@@ -21,24 +21,24 @@ from tests.helpers.auction import auction_helpers
 
 @external
 func test_get_last_block_not_initialized{
-    syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
-}() -> ():
+    syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
+}() -> () {
     %{ expect_revert(error_message="Last block was not initialized") %}
-    get_auction_last_block(2137)
+    get_auction_last_block(2137);
 
-    return ()
-end
+    return ();
+}
 
 @external
-func test_existing_last_block{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    ) -> ():
-    alloc_locals
-    let expected_last_block = 2137
-    auction_last_block.write(AUCTION_ID, expected_last_block)
+func test_existing_last_block{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    ) -> () {
+    alloc_locals;
+    let expected_last_block = 2137;
+    auction_last_block.write(AUCTION_ID, expected_last_block);
 
-    let (last_block) = get_auction_last_block(AUCTION_ID)
+    let (last_block) = get_auction_last_block(AUCTION_ID);
 
-    assert expected_last_block = last_block
+    assert expected_last_block = last_block;
 
-    return ()
-end
+    return ();
+}

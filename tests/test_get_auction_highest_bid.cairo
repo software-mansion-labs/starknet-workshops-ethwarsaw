@@ -22,25 +22,25 @@ from tests.helpers.auction import auction_helpers
 
 @external
 func test_get_bid_when_no_bid_exist{
-    syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
-}() -> ():
+    syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
+}() -> () {
     %{ expect_revert(error_message="Bid was not initialized") %}
-    get_auction_highest_bid(2137)
+    get_auction_highest_bid(2137);
 
-    return ()
-end
+    return ();
+}
 
 @external
-func test_existing_bid{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> ():
-    alloc_locals
-    let amount = Uint256(100, 0)
-    let account = 'account'
-    auction_highest_bid.write(AUCTION_ID, Bid(amount, account))
+func test_existing_bid{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> () {
+    alloc_locals;
+    let amount = Uint256(100, 0);
+    let account = 'account';
+    auction_highest_bid.write(AUCTION_ID, Bid(amount, account));
 
-    let (highest_bid) = get_auction_highest_bid(AUCTION_ID)
+    let (highest_bid) = get_auction_highest_bid(AUCTION_ID);
 
-    assert amount = highest_bid.amount
-    assert account = highest_bid.address
+    assert amount = highest_bid.amount;
+    assert account = highest_bid.address;
 
-    return ()
-end
+    return ();
+}

@@ -20,42 +20,42 @@ from tests.helpers.constants import SELLER, AUCTION_ID
 from tests.helpers.auction import auction_helpers
 
 @external
-func __setup__():
-    erc20_helpers.deploy_contract()
-    erc721_helpers.deploy_contract()
-    return ()
-end
+func __setup__() {
+    erc20_helpers.deploy_contract();
+    erc721_helpers.deploy_contract();
+    return ();
+}
 
 @external
-func test_auction_does_not_exist{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    ) -> ():
+func test_auction_does_not_exist{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    ) -> () {
     %{ expect_revert(error_message="Last block was not initialized") %}
-    is_auction_active(2137)
+    is_auction_active(2137);
 
-    return ()
-end
+    return ();
+}
 
 @external
-func test_auction_is_active{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    ) -> ():
-    alloc_locals
-    let minimal_bid = Uint256(100, 0)
-    let end_block = 100
+func test_auction_is_active{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
+    ) {
+    alloc_locals;
+    let minimal_bid = Uint256(100, 0);
+    let end_block = 100;
 
-    auction_helpers.create_auction(minimal_bid, end_block)
+    auction_helpers.create_auction(minimal_bid, end_block);
 
     %{ roll(ids.end_block - 1) %}
-    let (is_active) = is_auction_active(AUCTION_ID)
-    assert 1 = is_active
+    let (is_active) = is_auction_active(AUCTION_ID);
+    assert 1 = is_active;
 
-    # Last block when auction is active
+    // Last block when auction is active
     %{ roll(ids.end_block) %}
-    let (is_active) = is_auction_active(AUCTION_ID)
-    assert 1 = is_active
+    let (is_active) = is_auction_active(AUCTION_ID);
+    assert 1 = is_active;
 
     %{ roll(ids.end_block + 1) %}
-    let (is_active) = is_auction_active(AUCTION_ID)
-    assert 0 = is_active
+    let (is_active) = is_auction_active(AUCTION_ID);
+    assert 0 = is_active;
 
-    return ()
-end
+    return ();
+}
