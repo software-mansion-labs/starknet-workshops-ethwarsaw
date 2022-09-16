@@ -29,243 +29,243 @@ from src.assertions import (
 )
 from src.storage import auctions, finalized_auctions, auction_highest_bid, auction_last_block
 
-##### EXERCISE 0 #####
+// #### EXERCISE 0 #####
 @view
-func get_auction{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    auction_id : felt
-) -> (auction : AuctionData):
-    # Read from 'auctions' storage variable 
-    let (auction) = auctions.read(auction_id)
-    # Call assert_auction_initialized function with 'auction' object as a parameter.
-    assert_auction_initialized(auction)
+func get_auction{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    auction_id: felt
+) -> (auction: AuctionData) {
+    // Read from 'auctions' storage variable
+    let (auction) = auctions.read(auction_id);
+    // Call assert_auction_initialized function with 'auction' object as a parameter.
+    assert_auction_initialized(auction);
 
-    return (auction)
-end
-
-@view
-func get_auction_highest_bid{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    auction_id : felt
-) -> (highest_bid : Bid):
-    alloc_locals
-    let (highest_bid) = auction_highest_bid.read(auction_id)
-
-    assert_bid_initialized(highest_bid)
-
-    return (highest_bid)
-end
+    return (auction,);
+}
 
 @view
-func get_auction_last_block{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    auction_id : felt
-) -> (end_block : felt):
-    let (end_block) = auction_last_block.read(auction_id)
+func get_auction_highest_bid{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    auction_id: felt
+) -> (highest_bid: Bid) {
+    alloc_locals;
+    let (highest_bid) = auction_highest_bid.read(auction_id);
 
-    assert_last_block_initialized(end_block)
+    assert_bid_initialized(highest_bid);
 
-    return (end_block)
-end
+    return (highest_bid,);
+}
 
-##### EXERCISE 1 #####
 @view
-func is_auction_active{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    auction_id : felt
-) -> (active : felt):
-    # Initialize memory for local variables.
-    alloc_locals
+func get_auction_last_block{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    auction_id: felt
+) -> (end_block: felt) {
+    let (end_block) = auction_last_block.read(auction_id);
 
-    let (last_block) = auction_last_block.read(auction_id)
-    assert_last_block_initialized(last_block)
+    assert_last_block_initialized(end_block);
 
-    # Call get_block_number() syscall
-    # retrive information about current block.
-    let (current_block) = get_block_number()
+    return (end_block,);
+}
 
-    let (active) = is_le(current_block, last_block)
+// #### EXERCISE 1 #####
+@view
+func is_auction_active{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    auction_id: felt
+) -> (active: felt) {
+    // Initialize memory for local variables.
+    alloc_locals;
 
-    return (active)
-end
+    let (last_block) = auction_last_block.read(auction_id);
+    assert_last_block_initialized(last_block);
 
-func assert_auction_active{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    auction_id : felt
-):
-    let (active) = is_auction_active(auction_id)
+    // Call get_block_number() syscall
+    // retrive information about current block.
+    let (current_block) = get_block_number();
 
-    with_attr error_message("Auction is not active"):
-        assert active = 1
-    end
+    let active = is_le(current_block, last_block);
 
-    return ()
-end
+    return (active,);
+}
 
-func assert_auction_not_active{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    auction_id : felt
-):
-    let (active) = is_auction_active(auction_id)
+func assert_auction_active{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    auction_id: felt
+) {
+    let (active) = is_auction_active(auction_id);
 
-    with_attr error_message("Auction is still active"):
-        assert active = 0
-    end
+    with_attr error_message("Auction is not active") {
+        assert active = 1;
+    }
 
-    return ()
-end
+    return ();
+}
 
-##### EXERCISE 2 #####
+func assert_auction_not_active{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    auction_id: felt
+) {
+    let (active) = is_auction_active(auction_id);
+
+    with_attr error_message("Auction is still active") {
+        assert active = 0;
+    }
+
+    return ();
+}
+
+// #### EXERCISE 2 #####
 @external
-func create_auction{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    auction_id : felt,
-    asset_id : Uint256,
-    min_bid_increment : Uint256,
-    erc20_address : felt,
-    erc721_address : felt,
-    lifetime : felt,
-) -> (auction_id : felt):
-    alloc_locals
+func create_auction{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    auction_id: felt,
+    asset_id: Uint256,
+    min_bid_increment: Uint256,
+    erc20_address: felt,
+    erc721_address: felt,
+    lifetime: felt,
+) -> (auction_id: felt) {
+    alloc_locals;
 
-    assert_auction_does_not_exist(auction_id)
-    assert_address(erc20_address)
-    assert_address(erc721_address)
-    assert_min_bid_increment(min_bid_increment)
-    assert_lifetime(lifetime)
+    assert_auction_does_not_exist(auction_id);
+    assert_address(erc20_address);
+    assert_address(erc721_address);
+    assert_min_bid_increment(min_bid_increment);
+    assert_lifetime(lifetime);
 
-    # Call get_caller_address() syscall
-    # retrive information about caller adress.
-    let (seller) = get_caller_address()
+    // Call get_caller_address() syscall
+    // retrive information about caller adress.
+    let (seller) = get_caller_address();
 
-    # Create an instance of AuctionData struct.
+    // Create an instance of AuctionData struct.
     let auction = AuctionData(
         seller=seller,
         asset_id=asset_id,
         min_bid_increment=min_bid_increment,
         erc20_address=erc20_address,
         erc721_address=erc721_address,
-    )
+    );
 
-    # Write auction to 'auctions' storage variable (map).
-    auctions.write(auction_id, auction)
+    // Write auction to 'auctions' storage variable (map).
+    auctions.write(auction_id, auction);
 
-    # Get current block and calculate auction end block number. 
-    let (current_block) = get_block_number()
-    let end_block = current_block + lifetime
-    auction_last_block.write(auction_id, end_block)
+    // Get current block and calculate auction end block number.
+    let (current_block) = get_block_number();
+    let end_block = current_block + lifetime;
+    auction_last_block.write(auction_id, end_block);
 
-    # Transfer ERC721 asset to the asset vault.
-    vault.deposit_asset(erc721_address, asset_id, seller)
+    // Transfer ERC721 asset to the asset vault.
+    vault.deposit_asset(erc721_address, asset_id, seller);
 
-    # Emit an auction_created event.
+    // Emit an auction_created event.
     auction_created.emit(
         auction_id=auction_id,
         asset_id=asset_id,
         min_bid_increment=min_bid_increment,
         lifetime=lifetime,
-    )
+    );
 
-    return (auction_id)
-end
+    return (auction_id,);
+}
 
-func verify_outbid{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    auction_id : felt, old_bid : Bid, new_bid : Bid
-):
-    alloc_locals  # explain why it is needed
-    let (auction) = get_auction(auction_id)
-    let (min_bid) = SafeUint256.add(old_bid.amount, auction.min_bid_increment)
+func verify_outbid{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    auction_id: felt, old_bid: Bid, new_bid: Bid
+) {
+    alloc_locals;  // explain why it is needed
+    let (auction) = get_auction(auction_id);
+    let (min_bid) = SafeUint256.add(old_bid.amount, auction.min_bid_increment);
 
-    let (higher_than_minimum) = uint256_le(min_bid, new_bid.amount)
+    let (higher_than_minimum) = uint256_le(min_bid, new_bid.amount);
 
-    with_attr error_message("New bid too low"):
-        assert higher_than_minimum = 1
-    end
+    with_attr error_message("New bid too low") {
+        assert higher_than_minimum = 1;
+    }
 
-    return ()
-end
+    return ();
+}
 
-func prolong_auction_on_end{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+func prolong_auction_on_end{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     auction_id
-):
-    alloc_locals
+) {
+    alloc_locals;
 
-    let (local current_block) = get_block_number()
-    let (local end_block) = get_auction_last_block(auction_id)
+    let (local current_block) = get_block_number();
+    let (local end_block) = get_auction_last_block(auction_id);
 
-    local diff = end_block - current_block
+    local diff = end_block - current_block;
 
-    let (should_prolong) = is_le(diff, AUCTION_PROLONGATION_ON_BID)
-    if should_prolong == 1:
-        let new_last_block = end_block + AUCTION_PROLONGATION_ON_BID
-        auction_last_block.write(auction_id, new_last_block)
-    else:
-        # This else statement must contain function call, to
-        # avoid using tempvars (outside of scope of this workshop)
-        auction_last_block.write(auction_id, end_block)
-    end
+    let should_prolong = is_le(diff, AUCTION_PROLONGATION_ON_BID);
+    if (should_prolong == 1) {
+        let new_last_block = end_block + AUCTION_PROLONGATION_ON_BID;
+        auction_last_block.write(auction_id, new_last_block);
+    } else {
+        // This else statement must contain function call, to
+        // avoid using tempvars (outside of scope of this workshop)
+        auction_last_block.write(auction_id, end_block);
+    }
 
-    return ()
-end
+    return ();
+}
 
-##### EXERCISE 3 #####
+// #### EXERCISE 3 #####
 @external
-func place_bid{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    auction_id : felt, amount : Uint256
-):
-    alloc_locals
+func place_bid{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    auction_id: felt, amount: Uint256
+) {
+    alloc_locals;
 
-    assert_auction_active(auction_id)
+    assert_auction_active(auction_id);
 
-    let (caller_address) = get_caller_address()
-    let (old_bid) = auction_highest_bid.read(auction_id)
+    let (caller_address) = get_caller_address();
+    let (old_bid) = auction_highest_bid.read(auction_id);
 
-    let new_bid = Bid(amount=amount, address=caller_address)
+    let new_bid = Bid(amount=amount, address=caller_address);
 
-    let (auction) = auctions.read(auction_id)
-    verify_outbid(auction_id, old_bid, new_bid)
+    let (auction) = auctions.read(auction_id);
+    verify_outbid(auction_id, old_bid, new_bid);
 
-    auction_highest_bid.write(auction_id, new_bid)
+    auction_highest_bid.write(auction_id, new_bid);
 
-    prolong_auction_on_end(auction_id)
+    prolong_auction_on_end(auction_id);
 
-    let (previous_bid_exists) = is_bid_initialized(old_bid)
-    if previous_bid_exists == 1:
-        vault.transfer_bid(auction.erc20_address, old_bid, old_bid.address)
-        vault.deposit_bid(auction.erc20_address, new_bid)
-    else:
-        vault.deposit_bid(auction.erc20_address, new_bid)
-    end
+    let (previous_bid_exists) = is_bid_initialized(old_bid);
+    if (previous_bid_exists == 1) {
+        vault.transfer_bid(auction.erc20_address, old_bid, old_bid.address);
+        vault.deposit_bid(auction.erc20_address, new_bid);
+    } else {
+        vault.deposit_bid(auction.erc20_address, new_bid);
+    }
 
-    bid_placed.emit(auction_id=auction_id, amount=amount)
+    bid_placed.emit(auction_id=auction_id, amount=amount);
 
-    return ()
-end
+    return ();
+}
 
-##### EXERCISE 4 #####
+// #### EXERCISE 4 #####
 @external
-func finalize_auction{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    auction_id : felt
-):
-    alloc_locals
+func finalize_auction{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    auction_id: felt
+) {
+    alloc_locals;
 
-    assert_auction_not_active(auction_id)
-    assert_auction_not_finalized(auction_id)
+    assert_auction_not_active(auction_id);
+    assert_auction_not_finalized(auction_id);
 
-    # It is important to do it BEFORE transferring assets, otherwise malicious ERC721 might
-    # call finalize_auction multiple times during transfer.
-    finalized_auctions.write(auction_id, 1)
+    // It is important to do it BEFORE transferring assets, otherwise malicious ERC721 might
+    // call finalize_auction multiple times during transfer.
+    finalized_auctions.write(auction_id, 1);
 
-    let (auction) = get_auction(auction_id)
+    let (auction) = get_auction(auction_id);
 
-    let (winning_bid) = auction_highest_bid.read(auction_id)
+    let (winning_bid) = auction_highest_bid.read(auction_id);
 
-    let (has_bid) = is_bid_initialized(winning_bid)
+    let (has_bid) = is_bid_initialized(winning_bid);
 
-    if has_bid == 1:
-        # Seller gets the money
-        vault.transfer_bid(auction.erc20_address, winning_bid, auction.seller)
-        # Buyer gets the asset
-        vault.transfer_asset(auction.erc721_address, auction.asset_id, winning_bid.address)
-    else:
-        # Seller gets the asset back
-        vault.transfer_asset(auction.erc721_address, auction.asset_id, auction.seller)
-    end
+    if (has_bid == 1) {
+        // Seller gets the money
+        vault.transfer_bid(auction.erc20_address, winning_bid, auction.seller);
+        // Buyer gets the asset
+        vault.transfer_asset(auction.erc721_address, auction.asset_id, winning_bid.address);
+    } else {
+        // Seller gets the asset back
+        vault.transfer_asset(auction.erc721_address, auction.asset_id, auction.seller);
+    }
 
-    auction_finalized.emit(auction_id=auction_id)
+    auction_finalized.emit(auction_id=auction_id);
 
-    return ()
-end
+    return ();
+}
